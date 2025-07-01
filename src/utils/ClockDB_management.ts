@@ -279,6 +279,16 @@ export async function exportRecordsToCSV() {
     fs.writeFileSync(filePath, csvContent, "utf8");
 
     console.log(`CSV file exported successfully: ${filePath}`);
+
+    const result = await ClockRecordModel.updateMany(
+      {}, // Match all records
+      { $set: { totalHours: 0 } } // Reset totalHours to 0
+    );
+    if (result.modifiedCount === 0) {
+      console.warn("No records were updated to reset totalHours.");
+    } else {
+      console.log(`Total hours reset for ${result.modifiedCount} records.`);
+    }
     return filePath; // Return the file path instead of content
   } catch (error) {
     console.error("Error exporting records to CSV:", error);

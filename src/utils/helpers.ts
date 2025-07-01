@@ -1,5 +1,5 @@
 import "dotenv/config";
-import { exportRecordsToCSV } from "./ClockDB_management";
+import { exportRecordsToCSV, resetWeeklyData } from "./ClockDB_management";
 import ClockChannelsModel from "../models/ClockChannels.model";
 import { client } from "../bot";
 import { AttachmentBuilder, TextChannel } from "discord.js";
@@ -103,6 +103,21 @@ export const exportEveryweekToCSV = () => {
             console.log(`CSV file deleted after upload: ${filePath}`);
           } catch (deleteError) {
             console.error("Error deleting CSV file:", deleteError);
+          }
+
+          // Reset weekly data after successful export
+          try {
+            const resetCount = await resetWeeklyData();
+            console.log(`🔄 Weekly data reset completed. Reset totalHours for ${resetCount} users.`);
+            
+            await adminChannel.send({
+              content: `🔄 Weekly data has been reset. All users' total hours have been set to 0 for the new week.`,
+            });
+          } catch (resetError) {
+            console.error("❌ Error during weekly data reset:", resetError);
+            await adminChannel.send({
+              content: `⚠️ Warning: CSV export was successful, but there was an error resetting weekly data. Please check the logs.`,
+            });
           }
         } else {
           console.log("❌ Weekly CSV export failed");
