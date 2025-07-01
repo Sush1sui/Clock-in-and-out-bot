@@ -51,6 +51,10 @@ export default {
         await channel?.delete();
       }
 
+      await interaction.guild.roles.cache
+        .get(clockChannels?.clockInRoleId!)
+        ?.delete();
+
       await ClockChannelsModel.deleteMany();
 
       await interaction.editReply(
