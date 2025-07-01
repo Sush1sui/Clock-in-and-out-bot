@@ -414,7 +414,7 @@ export async function initializeClockButtonsCollector() {
 
       if (!member.roles.cache.hasAny(chatterRoleId, teamLeaderRoleId)) {
         await interaction_button.reply({
-          content: "You are not allowed to clock in.",
+          content: "You are not allowed to clock out.",
           flags: "Ephemeral",
         });
         return;
