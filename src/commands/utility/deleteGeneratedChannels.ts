@@ -3,7 +3,6 @@ import {
   PermissionFlagsBits,
   SlashCommandBuilder,
 } from "discord.js";
-import { permission } from "process";
 import ClockChannelsModel from "../../models/ClockChannels.model";
 
 export default {
