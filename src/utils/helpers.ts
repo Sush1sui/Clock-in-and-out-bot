@@ -4,6 +4,7 @@ import ClockChannelsModel from "../models/ClockChannels.model";
 import { client } from "../bot";
 import { AttachmentBuilder, TextChannel } from "discord.js";
 import * as fs from "fs";
+import ClockRecordModel from "../models/ClockRecord.model";
 
 const SERVER_LINK = process.env.SERVER_LINK;
 let timeoutId: NodeJS.Timeout;
@@ -88,6 +89,18 @@ export const exportEveryweekToCSV = () => {
           if (!adminChannel) {
             console.error("Admin channel not found or not text-based.");
             return;
+          }
+
+          const result = await ClockRecordModel.updateMany(
+            {}, // Match all records
+            { $set: { totalHours: 0 } } // Reset totalHours to 0
+          );
+          if (result.modifiedCount === 0) {
+            console.warn("No records were updated to reset totalHours.");
+          } else {
+            console.log(
+              `Total hours reset for ${result.modifiedCount} records.`
+            );
           }
 
           const attachment = new AttachmentBuilder(filePath);

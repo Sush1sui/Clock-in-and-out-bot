@@ -6,8 +6,7 @@ import ClockRecordModel from "../models/ClockRecord.model";
 import * as fs from "fs";
 import * as path from "path";
 
-export const teamLeaderRoleId =
-  process.env.TEAM_LEADER_ROLE_ID || "1379485478721552504"; // Default to a specific role ID if not set
+export const teamLeaderRoleId = process.env.TL_ROLE_ID || "1379485478721552504"; // Default to a specific role ID if not set
 export const chatterRoleId =
   process.env.CHATTER_ROLE_ID || "1312607061015793714"; // Default to a specific role ID if not set
 const guildId = process.env.GUILD_ID || "1312604320650235945"; // Default to a specific guild ID if not set
@@ -280,15 +279,6 @@ export async function exportRecordsToCSV() {
 
     console.log(`CSV file exported successfully: ${filePath}`);
 
-    const result = await ClockRecordModel.updateMany(
-      {}, // Match all records
-      { $set: { totalHours: 0 } } // Reset totalHours to 0
-    );
-    if (result.modifiedCount === 0) {
-      console.warn("No records were updated to reset totalHours.");
-    } else {
-      console.log(`Total hours reset for ${result.modifiedCount} records.`);
-    }
     return filePath; // Return the file path instead of content
   } catch (error) {
     console.error("Error exporting records to CSV:", error);
