@@ -78,24 +78,24 @@ export default {
         ],
       });
 
-      const userPermissions = {
-        allow: [
-          PermissionFlagsBits.ViewChannel,
-          PermissionFlagsBits.ReadMessageHistory,
-        ],
-        deny: [
-          PermissionFlagsBits.SendMessages,
-          PermissionFlagsBits.AddReactions,
-          PermissionFlagsBits.UseExternalEmojis,
-          PermissionFlagsBits.AttachFiles,
-          PermissionFlagsBits.EmbedLinks,
-          PermissionFlagsBits.ManageMessages,
-          PermissionFlagsBits.ManageThreads,
-          PermissionFlagsBits.CreatePublicThreads,
-          PermissionFlagsBits.CreatePrivateThreads,
-          PermissionFlagsBits.SendMessagesInThreads,
-        ],
-      };
+      // const userPermissions = {
+      //   allow: [
+      //     PermissionFlagsBits.ViewChannel,
+      //     PermissionFlagsBits.ReadMessageHistory,
+      //   ],
+      //   deny: [
+      //     PermissionFlagsBits.SendMessages,
+      //     PermissionFlagsBits.AddReactions,
+      //     PermissionFlagsBits.UseExternalEmojis,
+      //     PermissionFlagsBits.AttachFiles,
+      //     PermissionFlagsBits.EmbedLinks,
+      //     PermissionFlagsBits.ManageMessages,
+      //     PermissionFlagsBits.ManageThreads,
+      //     PermissionFlagsBits.CreatePublicThreads,
+      //     PermissionFlagsBits.CreatePrivateThreads,
+      //     PermissionFlagsBits.SendMessagesInThreads,
+      //   ],
+      // };
 
       // Create clock-in channel
       const clockInChannel = await interaction.guild.channels.create({
