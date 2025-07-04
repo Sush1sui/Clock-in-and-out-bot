@@ -2,7 +2,6 @@ import {
   ChatInputCommandInteraction,
   SlashCommandBuilder,
   PermissionFlagsBits,
-  PermissionOverwrites,
 } from "discord.js";
 import {
   addClockRecord,
@@ -16,7 +15,6 @@ import {
   clock_in_interface,
   clock_out_interface,
 } from "../../utils/embedInterface";
-import { permission } from "node:process";
 
 export default {
   data: new SlashCommandBuilder()
