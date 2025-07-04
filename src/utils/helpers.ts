@@ -103,15 +103,18 @@ export const exportEveryweekToCSV = () => {
             );
           }
 
+          // Delete records for users who are not currently clocked in
           const cleanUpResult = await ClockRecordModel.deleteMany({
-            clockOutTime: undefined,
+            clockOutTime: { $exists: false },
+            clockInTime: { $exists: true },
           });
+
           if (cleanUpResult.deletedCount > 0) {
             console.log(
-              `Cleaned up ${cleanUpResult.deletedCount} records with undefined clockOutTime.`
+              `Cleaned up ${cleanUpResult.deletedCount} completed clock-in records.`
             );
           } else {
-            console.log("No records with undefined clockOutTime found.");
+            console.log("No completed clock-in records found to clean up.");
           }
 
           const attachment = new AttachmentBuilder(filePath);
