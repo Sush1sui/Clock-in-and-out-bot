@@ -91,17 +91,11 @@ export const exportEveryweekToCSV = () => {
             return;
           }
 
-          const result = await ClockRecordModel.updateMany(
-            {}, // Match all records
-            { $set: { totalHours: 0 } } // Reset totalHours to 0
+          const result = await ClockRecordModel.deleteMany();
+
+          console.log(
+            `Deleted ${result.deletedCount} clock records from the database.`
           );
-          if (result.modifiedCount === 0) {
-            console.warn("No records were updated to reset totalHours.");
-          } else {
-            console.log(
-              `Total hours reset for ${result.modifiedCount} records.`
-            );
-          }
 
           const attachment = new AttachmentBuilder(filePath);
 
