@@ -91,11 +91,28 @@ export const exportEveryweekToCSV = () => {
             return;
           }
 
-          const result = await ClockRecordModel.deleteMany();
-
-          console.log(
-            `Deleted ${result.deletedCount} clock records from the database.`
+          const result = await ClockRecordModel.updateMany(
+            {}, // Match all records
+            { $set: { totalHours: 0 } } // Reset totalHours to 0
           );
+          if (result.modifiedCount === 0) {
+            console.warn("No records were updated to reset totalHours.");
+          } else {
+            console.log(
+              `Total hours reset for ${result.modifiedCount} records.`
+            );
+          }
+
+          const cleanUpResult = await ClockRecordModel.deleteMany({
+            clockOutTime: undefined,
+          });
+          if (cleanUpResult.deletedCount > 0) {
+            console.log(
+              `Cleaned up ${cleanUpResult.deletedCount} records with undefined clockOutTime.`
+            );
+          } else {
+            console.log("No records with undefined clockOutTime found.");
+          }
 
           const attachment = new AttachmentBuilder(filePath);
 
