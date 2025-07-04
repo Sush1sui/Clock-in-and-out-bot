@@ -2,6 +2,7 @@ import {
   ChatInputCommandInteraction,
   SlashCommandBuilder,
   PermissionFlagsBits,
+  PermissionOverwrites,
 } from "discord.js";
 import {
   addClockRecord,
@@ -15,6 +16,7 @@ import {
   clock_in_interface,
   clock_out_interface,
 } from "../../utils/embedInterface";
+import { permission } from "node:process";
 
 export default {
   data: new SlashCommandBuilder()
@@ -70,7 +72,32 @@ export default {
         name: "⏰ Time Tracking",
         type: 4, // CategoryChannel type
         reason: "Clock-in/out bot setup",
+        permissionOverwrites: [
+          {
+            id: interaction.guild.roles.everyone.id,
+            deny: [PermissionFlagsBits.ViewChannel],
+          },
+        ],
       });
+
+      const userPermissions = {
+        allow: [
+          PermissionFlagsBits.ViewChannel,
+          PermissionFlagsBits.ReadMessageHistory,
+        ],
+        deny: [
+          PermissionFlagsBits.SendMessages,
+          PermissionFlagsBits.AddReactions,
+          PermissionFlagsBits.UseExternalEmojis,
+          PermissionFlagsBits.AttachFiles,
+          PermissionFlagsBits.EmbedLinks,
+          PermissionFlagsBits.ManageMessages,
+          PermissionFlagsBits.ManageThreads,
+          PermissionFlagsBits.CreatePublicThreads,
+          PermissionFlagsBits.CreatePrivateThreads,
+          PermissionFlagsBits.SendMessagesInThreads,
+        ],
+      };
 
       // Create clock-in channel
       const clockInChannel = await interaction.guild.channels.create({
@@ -78,6 +105,20 @@ export default {
         type: 0, // TextChannel type
         parent: category.id,
         reason: "Clock-in channel for time tracking",
+        permissionOverwrites: [
+          {
+            id: interaction.guild.roles.everyone.id,
+            deny: [PermissionFlagsBits.ViewChannel],
+          },
+          {
+            id: chatterRoleId,
+            ...userPermissions,
+          },
+          {
+            id: teamLeaderRoleId,
+            ...userPermissions,
+          },
+        ],
       });
 
       // Create clock-out channel
@@ -86,6 +127,20 @@ export default {
         type: 0, // TextChannel type
         parent: category.id,
         reason: "Clock-out channel for time tracking",
+        permissionOverwrites: [
+          {
+            id: interaction.guild.roles.everyone.id,
+            deny: [PermissionFlagsBits.ViewChannel],
+          },
+          {
+            id: chatterRoleId,
+            ...userPermissions,
+          },
+          {
+            id: teamLeaderRoleId,
+            ...userPermissions,
+          },
+        ],
       });
 
       // Create admin channel
@@ -94,6 +149,12 @@ export default {
         type: 0, // TextChannel type
         parent: category.id,
         reason: "Admin channel for time tracking management",
+        permissionOverwrites: [
+          {
+            id: interaction.guild.roles.everyone.id,
+            deny: [PermissionFlagsBits.ViewChannel],
+          },
+        ],
       });
 
       const clockInRole = await interaction.guild.roles.create({
