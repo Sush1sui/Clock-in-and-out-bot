@@ -105,8 +105,8 @@ export const exportEveryweekToCSV = () => {
 
           // Delete records for users who are not currently clocked in
           const cleanUpResult = await ClockRecordModel.deleteMany({
-            clockOutTime: { $exists: false },
-            clockInTime: { $exists: true },
+            clockOutTime: { $exists: true },
+            clockInTime: { $exists: false },
           });
 
           if (cleanUpResult.deletedCount > 0) {
