@@ -1,7 +1,7 @@
 import "dotenv/config";
 import { exportRecordsToCSV } from "./ClockDB_management";
 import ClockChannelsModel from "../models/ClockChannels.model";
-import { client } from "../bot";
+import { client, startBot } from "../bot";
 import { AttachmentBuilder, TextChannel } from "discord.js";
 import * as fs from "fs";
 import ClockRecordModel from "../models/ClockRecord.model";
@@ -15,7 +15,10 @@ export const pingBot = () => {
   const attemptPing = () => {
     fetch(SERVER_LINK)
       .then((res) => res.text())
-      .then((text) => console.log(`Ping successful: ${text}`))
+      .then((text) => {
+        console.log(`Ping successful: ${text}`);
+        if (!client.isReady()) startBot();
+      })
       .catch((err) => {
         clearTimeout(timeoutId);
         console.log(`Ping failed, retrying: ${err}`);
@@ -146,4 +149,53 @@ export const exportEveryweekToCSV = () => {
   // Start the scheduling
   scheduleNextExport();
   console.log("📅 Weekly CSV export scheduler initialized");
+};
+
+export const initializeClockInTime = async () => {
+  const clockInTime = new Date();
+
+  try {
+    const allRecords = await ClockRecordModel.find({
+      clockInTime: { $exists: true },
+    });
+
+    if (allRecords.length === 0) {
+      console.log("No clock-in records found to initialize.");
+      return;
+    }
+
+    for (const record of allRecords) {
+      if (!record.clockInTime) continue;
+
+      const totalHours =
+        (clockInTime.getTime() - record.clockInTime.getTime()) / 3600000;
+
+      const updatedRecord = await ClockRecordModel.findOneAndUpdate(
+        { _id: record._id },
+        {
+          $set: {
+            clockInTime,
+            totalHours: totalHours + (record.totalHours || 0),
+          },
+        },
+        { new: true }
+      );
+
+      if (updatedRecord) {
+        console.log(
+          `Clock record initialized for user ${record.userId}: ${updatedRecord}`
+        );
+      } else {
+        console.error(
+          `Failed to update clock record for user ${record.userId}`
+        );
+      }
+    }
+  } catch (error) {
+    console.error("Error initializing clock-in time:", error);
+    throw error; // Re-throw to handle it in the calling function
+  }
+
+  console.log("Clock-in time initialization completed for all records.");
+  return;
 };

@@ -20,7 +20,21 @@ client.commands = new Collection();
 loadCommands(client);
 loadEvents(client);
 
-client.login(process.env.DISCORD_TOKEN);
+export const startBot = async () => {
+  try {
+    await client.login(process.env.DISCORD_TOKEN);
+    console.log("Bot is online!");
+  } catch (error) {
+    console.error("Error logging in:", error);
+  }
+};
+
+setTimeout(() => {
+  if (!client.isReady()) {
+    console.error("Bot failed to start within the expected time.");
+    startBot();
+  }
+}, 30000);
 
 // Handle unhandled promise rejections
 process.on("unhandledRejection", (error) => {

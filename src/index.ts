@@ -2,7 +2,7 @@ import "dotenv/config";
 import express from "express";
 import "./bot";
 import mongoose from "mongoose";
-import { pingBot } from "./utils/helpers";
+import { initializeClockInTime, pingBot } from "./utils/helpers";
 import { checkForExpiredClock } from "./utils/ClockDB_management";
 const PORT = process.env.PORT || 7669;
 
@@ -28,7 +28,12 @@ app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 
 pingBot();
 setTimeout(() => {
-  checkForExpiredClock();
+  initializeClockInTime()
+    .then(() => checkForExpiredClock())
+    .catch((e) => {
+      console.error("Error initializing clock in time:", e);
+    });
 }, 30000);
+
 setInterval(pingBot, 600000); // Ping every 10 minutes
 setInterval(checkForExpiredClock, 1200000); // Check every 20 minutes

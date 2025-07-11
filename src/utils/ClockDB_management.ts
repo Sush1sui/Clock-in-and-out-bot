@@ -131,8 +131,7 @@ export async function clockOutRecord(userId: string) {
 
     existingRecord.clockInTime = undefined;
     existingRecord.clockOutTime = clockOutTime;
-    existingRecord.totalHours =
-      Math.floor(totalHours) + (existingRecord.totalHours || 0);
+    existingRecord.totalHours = totalHours + (existingRecord.totalHours || 0);
     await existingRecord.save();
 
     console.log("Clock record updated:", existingRecord);
@@ -250,11 +249,17 @@ export async function exportRecordsToCSV() {
     csvRows.push(headers.join(","));
 
     for (const record of clockRecords) {
+      const decimal = ((record.totalHours || 0) % 1).toFixed(1);
+      const roundOff = parseFloat(decimal) >= 0.5 ? true : false;
       const row = [
         record.userId,
         client.guilds.cache.get(guildId)?.members.cache.get(record.userId)?.user
           .username || "Unknown",
-        record.totalHours || 0,
+        record.totalHours
+          ? roundOff
+            ? Math.ceil(record.totalHours)
+            : Math.floor(record.totalHours)
+          : 0, // Ensure totalHours is a number
       ];
       csvRows.push(row.join(","));
     }
@@ -351,6 +356,8 @@ export async function initializeClockButtonsCollector() {
         return;
       }
 
+      const isChatter = member.roles.cache.has(chatterRoleId);
+
       if (member.roles.cache.has(clockChannels.clockInRoleId)) {
         await interaction_button.reply({
           content: "You are already clocked in.",
@@ -365,7 +372,11 @@ export async function initializeClockButtonsCollector() {
           {
             color: 0x00ff00,
             title: "Clock In Successful",
-            description: `<@${interaction_button.user.id}> has been clocked in. Failing to clock out within 12 hours from now will result in an absent (Hours within the day of clock in won't be counted).`,
+            description: `<@${
+              interaction_button.user.id
+            }> has been clocked in. Failing to clock out within ${
+              isChatter ? "12" : "16"
+            } hours from now will result in an absent (Hours within the day of clock in won't be counted).`,
             footer: {
               text: "Time Tracking Bot",
               icon_url: interaction_button.guild.iconURL() || "",

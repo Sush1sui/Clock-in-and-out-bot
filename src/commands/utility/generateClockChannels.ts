@@ -275,6 +275,8 @@ export default {
           return;
         }
 
+        const isChatter = member.roles.cache.has(chatterRoleId);
+
         if (member.roles.cache.has(clockInRole.id)) {
           await interaction_button.reply({
             content: "You are already clocked in.",
@@ -289,7 +291,11 @@ export default {
             {
               color: 0x00ff00,
               title: "Clock In Successful",
-              description: `<@${interaction_button.user.id}> has been clocked in. Failing to clock out within 12 hours from now will result in an absent (Hours within the day of clock in won't be counted).`,
+              description: `<@${
+                interaction_button.user.id
+              }> has been clocked in. Failing to clock out within ${
+                isChatter ? "12" : "16"
+              } hours from now will result in an absent (Hours within the day of clock in won't be counted).`,
               footer: {
                 text: "Time Tracking Bot",
                 icon_url: interaction_button.guild.iconURL() || "",
