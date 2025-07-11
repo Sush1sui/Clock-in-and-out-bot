@@ -4,7 +4,7 @@ import "./bot";
 import mongoose from "mongoose";
 import { pingBot } from "./utils/helpers";
 import { checkForExpiredClock } from "./utils/ClockDB_management";
-const PORT = process.env.PORT || 6969;
+const PORT = process.env.PORT || 7669;
 
 const uri = process.env.MONGODB_URI;
 if (!uri) throw new Error("No database connection string");
