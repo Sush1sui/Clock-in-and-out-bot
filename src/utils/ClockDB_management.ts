@@ -337,6 +337,8 @@ export async function initializeClockButtonsCollector() {
     clockIn_collector.on("collect", async (interaction_button) => {
       if (!interaction_button.isButton()) return;
 
+      await interaction_button.deferReply({ flags: "Ephemeral" });
+
       console.log("Clock In button clicked by:", interaction_button.user.id);
 
       const member = await interaction_button.guild?.members.fetch(
@@ -344,23 +346,21 @@ export async function initializeClockButtonsCollector() {
       );
 
       if (!member.roles.cache.hasAny(chatterRoleId, teamLeaderRoleId)) {
-        await interaction_button.reply({
+        await interaction_button.editReply({
           content: "You are not allowed to clock in.",
-          flags: "Ephemeral",
         });
         return;
       }
 
       if (member.roles.cache.has(clockChannels.clockInRoleId)) {
-        await interaction_button.reply({
+        await interaction_button.editReply({
           content: "You are already clocked in.",
-          flags: "Ephemeral",
         });
         return;
       }
 
       await member.roles.add(clockChannels.clockInRoleId);
-      await interaction_button.reply({
+      await interaction_button.editReply({
         embeds: [
           {
             color: 0x00ff00,
@@ -372,7 +372,6 @@ export async function initializeClockButtonsCollector() {
             },
           },
         ],
-        flags: "Ephemeral",
       });
 
       const adminChannel = interaction_button.guild?.channels.cache.get(
@@ -403,23 +402,21 @@ export async function initializeClockButtonsCollector() {
       );
 
       if (!member.roles.cache.hasAny(chatterRoleId, teamLeaderRoleId)) {
-        await interaction_button.reply({
+        await interaction_button.editReply({
           content: "You are not allowed to clock out.",
-          flags: "Ephemeral",
         });
         return;
       }
 
       if (!member.roles.cache.has(clockChannels.clockInRoleId)) {
-        await interaction_button.reply({
+        await interaction_button.editReply({
           content: "You are not clocked in.",
-          flags: "Ephemeral",
         });
         return;
       }
 
       await member.roles.remove(clockChannels.clockInRoleId);
-      await interaction_button.reply({
+      await interaction_button.editReply({
         embeds: [
           {
             color: 0xff0000,
@@ -431,7 +428,6 @@ export async function initializeClockButtonsCollector() {
             },
           },
         ],
-        flags: "Ephemeral",
       });
 
       const adminChannel = interaction_button.guild?.channels.cache.get(
